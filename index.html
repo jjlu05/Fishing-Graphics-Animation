@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Fishing</title>
+
+    <script id="vshader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        attribute vec4 vColor;
+        attribute vec4 weights;
+
+        uniform mat4 modelMatrix;
+        uniform mat4 projMatrix;
+        uniform mat4 cameraMatrix;
+        uniform bool useBones;
+
+        uniform mat4 boneMatrix0;
+        uniform mat4 boneMatrix1;
+        uniform mat4 boneMatrix2;
+        uniform mat4 boneMatrix3;
+        uniform mat4 boneMatrix4;
+
+        varying vec4 fColor;
+
+        void main() {
+            fColor = vColor;
+
+            if(useBones) {
+                //apply bone transformations for the fishing rod
+                mat4 skinMatrix =weights.x*boneMatrix0 + weights.y*boneMatrix1 + weights.z*boneMatrix2 + weights.w*boneMatrix3 +
+                    (1.0-weights.x - weights.y - weights.z - weights.w)*boneMatrix4;
+
+                gl_Position = projMatrix * cameraMatrix * modelMatrix * skinMatrix * vPosition;
+            } else {
+                //standard rendering for all other objects
+                gl_Position = projMatrix * cameraMatrix * modelMatrix * vPosition;
+            }
+        }
+    </script>
+
+    <script id="fshader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 fColor;
+
+        void main() {
+            gl_FragColor = fColor;
+        }
+    </script>
+
+    <script src="lib/webgl-utils.js"></script>
+    <script src="lib/initShaders.js"></script>
+    <script src="lib/MV.js"></script>
+    <script src="lib/cs4731pjt1.js"></script>
+
+    <script src="main.js"></script>
+
+</head>
+
+<body onload="main()">
+
+<div style="text-align: center">
+    <h1 id='htitle'>CS 4732 Final Project - Fishing</h1>
+
+    <canvas id="webgl" width="400" height="400" style="border: 1px solid black;">
+        Please use a browser that supports the "canvas" tag.
+    </canvas>
+    <div>
+        Authors: Ethan Chen & Jacob Lu
+    </div>
+
+</div>
+
+</body>
+</html>
